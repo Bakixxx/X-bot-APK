@@ -1,0 +1,31 @@
+workflows:
+  build-android-apk:
+    name: Build Android APK
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      flutter: stable
+    scripts:
+      - name: Get Flutter packages
+        script: |
+          flutter pub get
+      - name: Analyze Dart code
+        script: |
+          flutter analyze
+      - name: Run unit tests (optional)
+        script: |
+          flutter test
+        ignore_failure: true
+      - name: Build APK
+        script: |
+          flutter build apk --release
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
+      - flutter_drive.log
+    publishing:
+      email:
+        recipients:
+          - abdulbakiturkmenoglu@gmail.com
+        notify:
+          success: true
+          failure: true
