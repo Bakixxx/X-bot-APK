@@ -1,3 +1,31 @@
-git add codemagic.yaml 
-git commit -m 'İlk iş akışını ekle' 
-git push
+workflows:
+  xbot-android-workflow:
+    name: X Bot Android Workflow
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      flutter: stable
+    scripts:
+      - name: Get Flutter packages
+        script: |
+          flutter pub get
+      - name: Analyze Dart code
+        script: |
+          flutter analyze
+      - name: Run unit tests
+        script: |
+          flutter test
+        ignore_failure: true
+      - name: Build release APK
+        script: |
+          flutter build apk --release
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
+      - flutter_drive.log
+    publishing:
+      email:
+        recipients:
+          - abdulbakiturkmenoglu@gmail.com
+        notify:
+          success: true
+          failure: true
