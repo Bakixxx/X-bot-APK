@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import '../bot/binance_bot.dart';
 
-class SignalScreen extends StatefulWidget {
+class SignalScreen extends StatelessWidget {
   final String apiKey;
   final String secretKey;
+  final bool isDemo;
+
+  SignalScreen({required this.apiKey, required this.secretKey, required this.isDemo});
+
 
   const SignalScreen({
     Key? key,
