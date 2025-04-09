@@ -1,3 +1,4 @@
+import 'mode_selection_screen.dart';
 import 'package:flutter/material.dart';
 
 class ApiKeysScreen extends StatefulWidget {
@@ -62,12 +63,20 @@ class _ApiKeysScreenState extends State<ApiKeysScreen> {
                 backgroundColor: Colors.black,
                 foregroundColor: Colors.yellow,
               ),
-              onPressed: _saveKeys,
-              child: const Text('Kaydet'),
-            ),
-          ],
+              onPressed: () {
+  if (apiKey.isNotEmpty && secretKey.isNotEmpty) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ModeSelectionScreen(
+          apiKey: apiKey,
+          secretKey: secretKey,
         ),
       ),
     );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Lütfen API bilgilerini girin")),
+    );
   }
-}
+},
