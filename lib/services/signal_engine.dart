@@ -1,4 +1,4 @@
-import 'binance_service.dart';
+import 'trade_executor.dart';
 
 class SignalEngine {
   final BinanceService _binanceService = BinanceService();
@@ -10,11 +10,20 @@ class SignalEngine {
       return 'Veri alınamadı';
     }
 
-    // Basit bir kural: Fiyat 60,000'in altına düşerse AL, üstündeyse SAT
-    if (price < 60000) {
-      return 'AL';
+    String signal = price < 60000 ? 'AL' : 'SAT';
+
+    // Örnek API anahtarları
+    final executor = TradeExecutor(
+      apiKey: 'BURAYA_API_KEY_YAZ',
+      apiSecret: 'BURAYA_API_SECRET_YAZ',
+    );
+
+    if (signal == 'AL') {
+      await executor.executeOrder(symbol, 'BUY', '0.001');
     } else {
-      return 'SAT';
+      await executor.executeOrder(symbol, 'SELL', '0.001');
     }
+
+    return signal;
   }
 }
