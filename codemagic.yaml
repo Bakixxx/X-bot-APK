@@ -1,0 +1,17 @@
+workflows:
+  android-workflow:
+    name: X Bot Android Build
+    max_build_duration: 60
+    environment:
+      flutter: stable
+      vars:
+        PACKAGE_NAME: "com.example.xbot"
+    scripts:
+      - name: Flutter Paketlerini Getir
+        script: |
+          flutter pub get
+      - name: APK Oluştur
+        script: |
+          flutter build apk --release
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
