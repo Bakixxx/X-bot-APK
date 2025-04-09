@@ -2,7 +2,16 @@ import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
 import 'binance_api.dart';
 
-void main() {
+void main(void testOrder() {
+  BinanceApi api = BinanceApi();
+  api.placeOrder(
+    symbol: 'BTCUSDT',
+    side: 'BUY',
+    type: 'MARKET',
+    quantity: '0.001',
+  );
+}
+) {
   runApp(const MyApp());
 }
 
