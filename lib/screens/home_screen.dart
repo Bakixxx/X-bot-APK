@@ -1,3 +1,4 @@
+import 'signal_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -22,24 +23,32 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 30),
             ElevatedButton(
-              onPressed: () {
-                // Demo moduna geçiş buraya eklenecek
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.yellow,
-                foregroundColor: Colors.black,
-              ),
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SignalScreen(mode: "Demo"),
+      ),
+    );
+  },
+  ...
+),
+
               child: const Text("Demo Mod"),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                // Gerçek moduna geçiş buraya eklenecek
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.yellow,
-                foregroundColor: Colors.black,
-              ),
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SignalScreen(mode: "Gerçek"),
+      ),
+    );
+  },
+  ...
+),
+
               child: const Text("Gerçek Mod"),
             ),
           ],
