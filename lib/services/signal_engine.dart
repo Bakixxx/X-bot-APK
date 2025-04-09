@@ -1,21 +1,20 @@
-import 'trade_executor.dart';
+import 'package:x_bot/services/trade_executor.dart';
 
 class SignalEngine {
-  final BinanceService _binanceService = BinanceService();
+  Future<String> generateSignal() async {
+    // Bu kısımda sinyal üretme algoritması olacak
+    // Şimdilik rastgele AL veya SAT diyelim (demo)
+    final now = DateTime.now().second;
+    return now % 2 == 0 ? 'AL' : 'SAT';
+  }
 
-  Future<String> generateSignal(String symbol) async {
-    final double? price = await _binanceService.fetchCurrentPrice(symbol);
+  Future<void> processSignal() async {
+    final signal = await generateSignal();
+    final symbol = 'BTCUSDT';
 
-    if (price == null) {
-      return 'Veri alınamadı';
-    }
-
-    String signal = price < 60000 ? 'AL' : 'SAT';
-
-    // Örnek API anahtarları
     final executor = TradeExecutor(
-      apiKey: 'BURAYA_API_KEY_YAZ',
-      apiSecret: 'BURAYA_API_SECRET_YAZ',
+      apiKey: 'BURAYA_API_KEYİNİ_YAZ',
+      apiSecret: 'BURAYA_API_SECRETİNİ_YAZ',
     );
 
     if (signal == 'AL') {
@@ -23,7 +22,5 @@ class SignalEngine {
     } else {
       await executor.executeOrder(symbol, 'SELL', '0.001');
     }
-
-    return signal;
   }
 }
