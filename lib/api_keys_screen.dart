@@ -43,16 +43,19 @@ class _ApiKeysScreenState extends State<ApiKeysScreen> {
             const SizedBox(height: 30),
             ElevatedButton(
   onPressed: () {
-    if (apiKeyController.text.isNotEmpty && secretKeyController.text.isNotEmpty) {
-      // Buraya yönlendirme kodunu ekliyoruz
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
-    }
-  },
-  child: const Text("Başla"),
-),
-
+  if (apiKey.isNotEmpty && secretKey.isNotEmpty) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SignalScreen(
+          apiKey: apiKey,
+          secretKey: secretKey,
+        ),
+      ),
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Lütfen API bilgilerini girin")),
+    );
   }
-}
+},
