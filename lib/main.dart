@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
-import 'binance_api.dart';
+import 'api_key_input.dart';
+import 'api_key_storage.dart';
 import 'mode_controller.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
 
 void main() {
   runApp(const MyApp());
@@ -57,49 +63,39 @@ class ModeSelectionPage extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
-  void placeOrder(String side) {
-    if (ModeController.isDemo) {
-      print("DEMO: $side emri simüle edildi");
+  Future<Widget> _getStartPage() async {
+    final keys = await ApiKeyStorage.loadKeys();
+    if (keys['apiKey'] == null || keys['secretKey'] == null) {
+      return const ApiKeyInputPage();
     } else {
-      BinanceApi api = BinanceApi();
-      api.placeOrder(
-        symbol: 'BTCUSDT',
-        side: side,
-        type: 'MARKET',
-        quantity: '0.001',
-      );
+      return const ModeSelectionPage();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final mode = ModeController.isDemo ? "DEMO MODU" : "GERÇEK MOD";
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("X Bot - $mode"),
-        backgroundColor: Colors.amber,
+    return MaterialApp(
+      title: 'X Bot',
+      theme: ThemeData(
+        primarySwatch: Colors.amber,
+        scaffoldBackgroundColor: Colors.black,
+        textTheme: const TextTheme(bodyMedium: TextStyle(color: Colors.white)),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () => placeOrder("BUY"),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-              child: const Text("BTC AL", style: TextStyle(color: Colors.white)),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => placeOrder("SELL"),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              child: const Text("BTC SAT", style: TextStyle(color: Colors.white)),
-            ),
-          ],
-        ),
+      debugShowCheckedModeBanner: false,
+      home: FutureBuilder(
+        future: _getStartPage(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return snapshot.data!;
+          } else {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+        },
       ),
     );
   }
