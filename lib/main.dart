@@ -1,67 +1,26 @@
 import 'package:flutter/material.dart';
-import 'services/binance_service.dart';
+import 'screens/splash_screen.dart';
 
 void main() {
-  runApp(XBotApp());
+  runApp(const MyApp());
 }
 
-class XBotApp extends StatelessWidget {
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'X Bot',
       theme: ThemeData(
-        primaryColor: Colors.yellow[700],
+        primarySwatch: Colors.amber,
         scaffoldBackgroundColor: Colors.black,
-        textTheme: TextTheme(bodyText2: TextStyle(color: Colors.white)),
-        appBarTheme: AppBarTheme(
-          color: Colors.yellow[700],
-          iconTheme: IconThemeData(color: Colors.black),
+        textTheme: const TextTheme(
+          bodyMedium: TextStyle(color: Colors.white),
         ),
       ),
-      home: SignalScreen(),
-      debugShowCheckedModeBanner: false,
-    );
-  }
-}
-
-class SignalScreen extends StatefulWidget {
-  @override
-  _SignalScreenState createState() => _SignalScreenState();
-}
-
-class _SignalScreenState extends State<SignalScreen> {
-  String signal = 'Yükleniyor...';
-
-  void fetchSignal() async {
-    final newSignal = await BinanceService.getSignal();
-    setState(() {
-      signal = newSignal;
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    fetchSignal();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('X Bot'),
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            signal,
-            style: TextStyle(fontSize: 18),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
+      home: const SplashScreen(),
     );
   }
 }
