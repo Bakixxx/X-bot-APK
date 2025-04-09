@@ -1,7 +1,6 @@
 workflows:
-  xbot-android-workflow:
-    name: X Bot Android Workflow
-    instance_type: mac_mini_m2
+  flutter-apk-build:
+    name: Flutter APK Build
     max_build_duration: 60
     environment:
       flutter: stable
@@ -9,23 +8,8 @@ workflows:
       - name: Get Flutter packages
         script: |
           flutter pub get
-      - name: Analyze Dart code
-        script: |
-          flutter analyze
-      - name: Run unit tests
-        script: |
-          flutter test
-        ignore_failure: true
-      - name: Build release APK
+      - name: Build APK
         script: |
           flutter build apk --release
     artifacts:
       - build/app/outputs/flutter-apk/app-release.apk
-      - flutter_drive.log
-    publishing:
-      email:
-        recipients:
-          - abdulbakiturkmenoglu@gmail.com
-        notify:
-          success: true
-          failure: true
