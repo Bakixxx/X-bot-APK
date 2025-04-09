@@ -1,27 +1,40 @@
 import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 
 class BinanceService {
-  static Future<String> getSignal() async {
-    const url = 'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT';
+  final String apiKey = 'BJAP1ro6v4VsCEH50JgkzocDMyzh1QLiysdbIwrcsdVIR7MJe7efxCDpM1IPflhq';
+  final String secretKey = 'B2846532';
+  final String baseUrl = 'https://api.binance.com';
 
-    try {
-      final response = await http.get(Uri.parse(url));
+  Future<String> getAccountInfo() async {
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final queryString = 'timestamp=$timestamp';
+    final signature = _generateSignature(queryString);
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final price = double.parse(data['price']);
+    final uri = Uri.parse('$baseUrl/api/v3/account?$queryString&signature=$signature');
 
-        if (price < 60000) {
-          return 'AL: BTC şu anda $price USD seviyesinde.';
-        } else {
-          return 'SAT: BTC şu anda $price USD seviyesinde.';
-        }
-      } else {
-        return 'Hata: Binance API yanıt vermiyor.';
-      }
-    } catch (e) {
-      return 'Bağlantı hatası: $e';
+    final response = await http.get(
+      uri,
+      headers: {
+        'X-MBX-APIKEY': apiKey,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Hesap bilgisi alınamadı: ${response.body}');
     }
+  }
+
+  String _generateSignature(String query) {
+    var key = utf8.encode(secretKey);
+    var bytes = utf8.encode(query);
+
+    var hmacSha256 = Hmac(sha256, key);
+    var digest = hmacSha256.convert(bytes);
+
+    return digest.toString();
   }
 }
