@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
+import 'binance_api.dart';
 
 void main() {
   runApp(const MyApp());
