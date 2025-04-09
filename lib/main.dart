@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/api_keys_screen.dart'; // <-- Bunu ekliyoruz
+import 'screens/api_keys_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -18,7 +19,8 @@ class MyApp extends StatelessWidget {
           bodyMedium: TextStyle(color: Colors.yellow),
         ),
       ),
-      home: HomeScreen(), // <-- Burası varsa burayı düzenleyeceğiz
+      home: const ApiKeysScreen(),
+
     );
   }
 }
