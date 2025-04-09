@@ -36,6 +36,16 @@ class MyHomePage extends StatelessWidget {
     );
   }
 
+  void placeSellOrder() {
+    BinanceApi api = BinanceApi();
+    api.placeOrder(
+      symbol: 'BTCUSDT',
+      side: 'SELL',
+      type: 'MARKET',
+      quantity: '0.001',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,16 +54,33 @@ class MyHomePage extends StatelessWidget {
         backgroundColor: Colors.amber,
       ),
       body: Center(
-        child: ElevatedButton(
-          onPressed: placeBuyOrder,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.amber,
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-          ),
-          child: const Text(
-            "BTC AL",
-            style: TextStyle(color: Colors.black, fontSize: 18),
-          ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: placeBuyOrder,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+              ),
+              child: const Text(
+                "BTC AL",
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: placeSellOrder,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+              ),
+              child: const Text(
+                "BTC SAT",
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+            ),
+          ],
         ),
       ),
     );
