@@ -36,12 +36,9 @@ class _HomeScreenState extends State<HomeScreen> {
             Text('Sinyal: $_signal', style: const TextStyle(fontSize: 24)),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _getSignal,
-              child: const Text('Sinyali Yenile'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+  onPressed: () {
+    final engine = SignalEngine();
+    engine.processSignal();
+  },
+  child: Text('İşlem Başlat'),
+),
