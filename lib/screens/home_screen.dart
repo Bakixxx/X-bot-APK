@@ -1,55 +1,43 @@
-import 'signal_screen.dart';
 import 'package:flutter/material.dart';
+import '../services/signal_engine.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String _signal = 'Sinyal bekleniyor...';
+
+  void _getSignal() async {
+    SignalEngine engine = SignalEngine();
+    String signal = await engine.generateSignal('BTCUSDT');
+    setState(() {
+      _signal = signal;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getSignal();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        title: const Text("X Bot"),
-        backgroundColor: Colors.yellow,
-        foregroundColor: Colors.black,
-      ),
+      appBar: AppBar(title: const Text('X Bot')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              "Mod Seçin",
-              style: TextStyle(fontSize: 24, color: Colors.yellow),
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-  onPressed: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const SignalScreen(mode: "Demo"),
-      ),
-    );
-  },
-  ...
-),
-
-              child: const Text("Demo Mod"),
-            ),
+            Text('Sinyal: $_signal', style: const TextStyle(fontSize: 24)),
             const SizedBox(height: 20),
             ElevatedButton(
-  onPressed: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const SignalScreen(mode: "Gerçek"),
-      ),
-    );
-  },
-  ...
-),
-
-              child: const Text("Gerçek Mod"),
+              onPressed: _getSignal,
+              child: const Text('Sinyali Yenile'),
             ),
           ],
         ),
