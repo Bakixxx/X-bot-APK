@@ -1,56 +1,57 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiKeysScreen extends StatefulWidget {
+  const ApiKeysScreen({super.key});
+
   @override
   _ApiKeysScreenState createState() => _ApiKeysScreenState();
 }
 
 class _ApiKeysScreenState extends State<ApiKeysScreen> {
-  final _storage = FlutterSecureStorage();
-  final _apiKeyController = TextEditingController();
-  final _secretKeyController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _loadKeys();
-  }
-
-  Future<void> _loadKeys() async {
-    _apiKeyController.text = await _storage.read(key: 'apiKey') ?? '';
-    _secretKeyController.text = await _storage.read(key: 'secretKey') ?? '';
-  }
-
-  Future<void> _saveKeys() async {
-    await _storage.write(key: 'apiKey', value: _apiKeyController.text);
-    await _storage.write(key: 'secretKey', value: _secretKeyController.text);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('API anahtarları kaydedildi')),
-    );
-  }
+  final TextEditingController _apiKeyController = TextEditingController();
+  final TextEditingController _secretKeyController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('API Anahtarları')),
+      backgroundColor: Colors.yellow[50],
+      appBar: AppBar(
+        title: const Text("Binance API Anahtarları"),
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.yellow,
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
             TextField(
               controller: _apiKeyController,
-              decoration: InputDecoration(labelText: 'API Key'),
+              decoration: const InputDecoration(
+                labelText: 'API Key',
+                border: OutlineInputBorder(),
+              ),
             ),
+            const SizedBox(height: 20),
             TextField(
               controller: _secretKeyController,
-              decoration: InputDecoration(labelText: 'Secret Key'),
+              decoration: const InputDecoration(
+                labelText: 'Secret Key',
+                border: OutlineInputBorder(),
+              ),
               obscureText: true,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 30),
             ElevatedButton(
-              onPressed: _saveKeys,
-              child: Text('Kaydet'),
+              onPressed: () {
+                // Geçici olarak sadece yazdırıyoruz:
+                print('API Key: ${_apiKeyController.text}');
+                print('Secret Key: ${_secretKeyController.text}');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.yellow,
+              ),
+              child: const Text('Kaydet'),
             ),
           ],
         ),
