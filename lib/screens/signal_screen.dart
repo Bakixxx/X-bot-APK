@@ -1,37 +1,43 @@
 import 'package:flutter/material.dart';
+import '../bot/binance_bot.dart';
 
-class SignalScreen extends StatelessWidget {
-  final String mode; // "Demo" veya "Gerçek"
+class SignalScreen extends StatefulWidget {
+  final String apiKey;
+  final String secretKey;
 
-  const SignalScreen({super.key, required this.mode});
+  const SignalScreen({
+    Key? key,
+    required this.apiKey,
+    required this.secretKey,
+  }) : super(key: key);
+
+  @override
+  _SignalScreenState createState() => _SignalScreenState();
+}
+
+class _SignalScreenState extends State<SignalScreen> {
+  String signalMessage = 'Sinyal bekleniyor...';
+
+  @override
+  void initState() {
+    super.initState();
+    getSignal();
+  }
+
+  Future<void> getSignal() async {
+    final bot = BinanceBot(apiKey: widget.apiKey, secretKey: widget.secretKey);
+    await bot.generateSignal("BTCUSDT"); // Şimdilik BTC/USDT örneği
+
+    setState(() {
+      signalMessage = 'Sinyal başarıyla üretildi!';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.yellow,
-        foregroundColor: Colors.black,
-        title: Text("$mode Modu - Sinyaller"),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.analytics, size: 80, color: Colors.yellow),
-            const SizedBox(height: 20),
-            Text(
-              "$mode Modunda Bot Aktif",
-              style: const TextStyle(fontSize: 22, color: Colors.yellow),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              "Sinyaller burada gösterilecek...",
-              style: TextStyle(color: Colors.white),
-            ),
-          ],
-        ),
-      ),
+      appBar: AppBar(title: Text("Sinyal Ekranı")),
+      body: Center(child: Text(signalMessage)),
     );
   }
 }
