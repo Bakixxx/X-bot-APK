@@ -42,20 +42,17 @@ class _ApiKeysScreenState extends State<ApiKeysScreen> {
             ),
             const SizedBox(height: 30),
             ElevatedButton(
-              onPressed: () {
-                // Geçici olarak sadece yazdırıyoruz:
-                print('API Key: ${_apiKeyController.text}');
-                print('Secret Key: ${_secretKeyController.text}');
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-                foregroundColor: Colors.yellow,
-              ),
-              child: const Text('Kaydet'),
-            ),
-          ],
-        ),
-      ),
-    );
+  onPressed: () {
+    if (apiKeyController.text.isNotEmpty && secretKeyController.text.isNotEmpty) {
+      // Buraya yönlendirme kodunu ekliyoruz
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    }
+  },
+  child: const Text("Başla"),
+),
+
   }
 }
