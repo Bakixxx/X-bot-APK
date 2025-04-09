@@ -1,54 +1,41 @@
-import '../services/binance_service.dart';
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+class HomeScreen extends StatelessWidget {
+  final bool isDemo;
 
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  bool isDemoMode = true;
+  const HomeScreen({super.key, required this.isDemo});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('X Bot'),
         backgroundColor: Colors.black,
-        foregroundColor: Colors.yellow,
-        actions: [
-          Switch(
-            value: isDemoMode,
-            activeColor: Colors.yellow,
-            onChanged: (value) {
-              setState(() {
-                isDemoMode = value;
-              });
-            },
-          ),
-        ],
+        title: Text(isDemo ? 'X Bot - DEMO Mod' : 'X Bot - Gerçek Mod'),
+        centerTitle: true,
       ),
-      backgroundColor: Colors.grey[100],
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.trending_up,
-              size: 80,
-              color: Colors.black,
-            ),
+            Icon(Icons.show_chart, size: 100, color: Colors.yellow),
             const SizedBox(height: 20),
             Text(
-              isDemoMode ? 'Demo Modu Aktif' : 'Gerçek Mod Aktif',
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              isDemo
+                  ? 'DEMO modda işlemler simüle ediliyor.'
+                  : 'Gerçek modda canlı işlemler yapılıyor.',
+              style: const TextStyle(color: Colors.yellow, fontSize: 16),
+              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 30),
-            const Text(
-              'Bot alım-satım işlemleri yapıyor...',
-              style: TextStyle(fontSize: 18),
+            const SizedBox(height: 40),
+            ElevatedButton(
+              onPressed: () {
+                // Botu başlatacak fonksiyon buraya eklenecek
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.yellow,
+                foregroundColor: Colors.black,
+              ),
+              child: const Text('BOTU BAŞLAT'),
             ),
           ],
         ),
