@@ -1,55 +1,31 @@
-import 'screens/home_screen.dart';
 import 'package:flutter/material.dart';
-import 'screens/api_keys_screen.dart'; // <-- Bunu ekliyoruz
+import 'screens/home_screen.dart';
+import 'screens/trade_screen.dart';
 import 'screens/api_keys_screen.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const XBotApp());
 }
 
-class MyApp extends StatelessWidget {
+class XBotApp extends StatelessWidget {
+  const XBotApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'X Bot',
       theme: ThemeData(
-        primarySwatch: Colors.yellow,
+        primarySwatch: Colors.amber,
         scaffoldBackgroundColor: Colors.black,
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: Colors.yellow),
-          bodyMedium: TextStyle(color: Colors.yellow),
-        ),
+        textTheme: const TextTheme(bodyMedium: TextStyle(color: Colors.white)),
+        appBarTheme: const AppBarTheme(backgroundColor: Colors.amber),
       ),
-      home: const ApiKeysScreen(),
-
-    );
-  }
-}
-
-class HomeScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('X Bot'),
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.yellow,
-      ),
-      body: Center(
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.black,
-            foregroundColor: Colors.yellow,
-          ),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const ApiKeysScreen()),
-            );
-          },
-          child: const Text("API Anahtarlarını Gir"),
-        ),
-      ),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const HomeScreen(),
+        '/trade': (context) => const TradeScreen(),
+        '/apikeys': (context) => const ApiKeysScreen(),
+      },
     );
   }
 }
