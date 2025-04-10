@@ -1,17 +1,22 @@
 workflows:
-  xbot-workflow:
-    name: X Bot APK Build
-    max_build_duration: 60
+  debug-apk:
+    name: Debug APK Build
+    max_build_duration: 30
     environment:
-      flutter: "3.19.5" # Kullandığın Flutter SDK sürümünü buraya yaz
-      android_signing:
-        - xbot_keystore # Eğer imzalı APK istiyorsan bu alanı kullanabilirsin
+      flutter: stable
+      xcode: latest
+      vars:
+        FLUTTER_CHANNEL: stable
     scripts:
-      - name: Flutter pub get
+      - name: Get Flutter dependencies
         script: |
           flutter pub get
-      - name: Build APK
+      - name: Build debug APK
         script: |
-          flutter build apk --release
+          flutter build apk --debug
     artifacts:
-      - build/app/outputs/flutter-apk/app-release.apk
+      - build/app/outputs/flutter-apk/app-debug.apk
+    publishing:
+      email:
+        recipients:
+          - abdulbakiturkmenoglu@gmail.com
