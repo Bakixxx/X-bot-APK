@@ -1,76 +1,45 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:technical_indicators/technical_indicators.dart';
+import 'dart:math';
+import 'package:x_bot/indicators/adx.dart';
+import 'package:x_bot/indicators/cci.dart';
+import 'package:x_bot/indicators/cmf.dart';
+import 'package:x_bot/indicators/donchian_channels.dart';
+import 'package:x_bot/indicators/elliott_wave.dart';
+import 'package:x_bot/indicators/fibonacci.dart';
+import 'package:x_bot/indicators/ichimoku.dart';
+import 'package:x_bot/indicators/parabolic_sar.dart';
+import 'package:x_bot/indicators/pivot_points.dart';
+import 'package:x_bot/indicators/williams_r.dart';
 
 class SignalEngine {
-  final String symbol;
-  final String interval;
-  final int limit;
+  Future<String> generateSignal(String symbol) async {
+    // Sahte veri örneği (gerçek veriler Binance API ile çekilmeli)
+    List<double> closePrices = List.generate(100, (index) => 50000 + Random().nextInt(1000) - 500);
+    List<double> highPrices = List.generate(100, (index) => closePrices[index] + Random().nextDouble() * 100);
+    List<double> lowPrices = List.generate(100, (index) => closePrices[index] - Random().nextDouble() * 100);
+    List<double> volumes = List.generate(100, (index) => 1000 + Random().nextDouble() * 100);
 
-  SignalEngine({
-    this.symbol = 'BTCUSDT',
-    this.interval = '1h',
-    this.limit = 100,
-  });
+    final ichimoku = Ichimoku().calculate(highPrices, lowPrices, closePrices);
+    final sar = ParabolicSAR().calculate(highPrices, lowPrices);
+    final adx = ADX().calculate(highPrices, lowPrices, closePrices, 14);
+    final fib = FibonacciRetracement().calculate(closePrices.last, highPrices.last, lowPrices.last);
+    final cci = CCI().calculate(closePrices, highPrices, lowPrices, 20);
+    final pivot = PivotPoints().calculate(highPrices.last, lowPrices.last, closePrices.last);
+    final donchian = DonchianChannels().calculate(highPrices, lowPrices, 20);
+    final cmf = CMF().calculate(closePrices, highPrices, lowPrices, volumes, 20);
+    final williams = WilliamsR().calculate(highPrices, lowPrices, closePrices, 14);
+    final ewo = ElliottWaveOscillator().calculate(closePrices);
 
-  Future<List<double>> _fetchClosePrices() async {
-    final url =
-        'https://api.binance.com/api/v3/klines?symbol=$symbol&interval=$interval&limit=$limit';
-    final response = await http.get(Uri.parse(url));
-    final data = jsonDecode(response.body);
-    return data.map<double>((item) => double.parse(item[4])).toList();
-  }
-
-  Future<Map<String, dynamic>> _fetchKlines() async {
-    final url =
-        'https://api.binance.com/api/v3/klines?symbol=$symbol&interval=$interval&limit=$limit';
-    final response = await http.get(Uri.parse(url));
-    final data = jsonDecode(response.body);
-    return {
-      'highs': data.map<double>((e) => double.parse(e[2])).toList(),
-      'lows': data.map<double>((e) => double.parse(e[3])).toList(),
-      'closes': data.map<double>((e) => double.parse(e[4])).toList(),
-      'opens': data.map<double>((e) => double.parse(e[1])).toList(),
-      'volumes': data.map<double>((e) => double.parse(e[5])).toList(),
-    };
-  }
-
-  Future<String> generateSignal() async {
-    final prices = await _fetchClosePrices();
-    final klineData = await _fetchKlines();
-
-    final closes = klineData['closes']!;
-    final highs = klineData['highs']!;
-    final lows = klineData['lows']!;
-    final volumes = klineData['volumes']!;
-    final opens = klineData['opens']!;
-
-    // İndikatör hesaplamaları
-    final ichimoku = Ichimoku().calculate(highs, lows, period: 9);
-    final sar = ParabolicSAR().calculate(highs, lows);
-    final adx = ADX().calculate(highs, lows, closes, period: 14);
-    final cci = CCI().calculate(highs, lows, closes, period: 20);
-    final rsi = RSI().calculate(closes, period: 14);
-    final donchian = DonchianChannels().calculate(highs, lows, period: 20);
-    final pivot = PivotPoints().calculate(highs.last, lows.last, closes.last);
-    final fib = FibonacciRetracement().calculate(highs.last, lows.last);
-    final cmf = ChaikinMoneyFlow().calculate(highs, lows, closes, volumes, period: 20);
-    final williams = WilliamsR().calculate(highs, lows, closes, period: 14);
-
-    // Sinyal değerlendirme (örnek birleştirme stratejisi)
     int buyScore = 0;
     int sellScore = 0;
 
-    if (sar.last < closes.last) buyScore++; else sellScore++;
-    if (adx.last > 25) buyScore++;
-    if (rsi.last < 30) buyScore++; else if (rsi.last > 70) sellScore++;
-    if (cci.last < -100) buyScore++; else if (cci.last > 100) sellScore++;
-    if (williams.last < -80) buyScore++; else if (williams.last > -20) sellScore++;
+    // Basit strateji örnekleri
+    if (sar.last < closePrices.last) buyScore++; else sellScore++;
+    if (adx > 20) buyScore++; else sellScore++;
+    if (cci > 100) buyScore++; else if (cci < -100) sellScore++;
     if (cmf > 0) buyScore++; else sellScore++;
-    if (closes.last > donchian['upper']!.last) buyScore++;
-    if (closes.last < donchian['lower']!.last) sellScore++;
+    if (williams > -20) buyScore++; else if (williams < -80) sellScore++;
+    if (ewo.last > 0) buyScore++; else sellScore++;
 
-    // Nihai sinyal
     if (buyScore > sellScore) {
       return 'AL';
     } else if (sellScore > buyScore) {
@@ -81,8 +50,8 @@ class SignalEngine {
   }
 
   void processSignal() async {
-    final signal = await generateSignal();
-    print('Oluşturulan sinyal: $signal');
-    // İşleme geçme kodu burada entegre edilebilir.
+    String signal = await generateSignal('BTCUSDT');
+    print("Oluşturulan Sinyal: $signal");
+    // Burada API ile al/sat işlemi tetiklenebilir
   }
 }
