@@ -1,0 +1,7 @@
+include ':app'
+
+def flutterProjectRoot = rootDir.getAbsoluteFile().getParentFile()
+def flutterSdkPath = new File(flutterProjectRoot, '.flutter-plugins')
+if (flutterSdkPath.exists()) {
+    apply from: flutterSdkPath
+}
