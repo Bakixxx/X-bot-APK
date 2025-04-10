@@ -1,10 +1,11 @@
 workflows:
-  android-workflow:
-    name: Android Build
+  build-xbot:
+    name: Build X Bot APK
     environment:
-      flutter: stable
+      flutter: "3.19.5"
+      android: latest
     scripts:
-      - name: Flutter Packages Get
+      - name: Get Flutter packages
         script: flutter pub get
       - name: Build APK
         script: flutter build apk --release
