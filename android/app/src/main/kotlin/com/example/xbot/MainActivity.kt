@@ -1,4 +1,4 @@
-package com.example.x_bot
+package com.example.xbot
 
 import io.flutter.embedding.android.FlutterActivity
 
