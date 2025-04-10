@@ -1,24 +1,29 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.x_bot">
-    
+    package="com.example.xbot">
+
+    <!-- İnternete erişim için gerekli izin -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
-        android:name="${applicationName}"
         android:label="X Bot"
         android:icon="@mipmap/ic_launcher"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        android:theme="@style/LaunchTheme">
+        
         <activity
-    android:name=".MainActivity"
-    android:exported="true"
-    android:launchMode="singleTop"
-    android:theme="@style/LaunchTheme"
-    android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
-    android:hardwareAccelerated="true"
-    android:windowSoftInputMode="adjustResize">
-    <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
-        <category android:name="android.intent.category.LAUNCHER"/>
-    </intent-filter>
-</activity>
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
 
     </application>
 
