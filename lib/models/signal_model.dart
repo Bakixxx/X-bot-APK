@@ -1,16 +1,23 @@
 class SignalModel {
   final String symbol;
-  final String action; // "AL" veya "SAT"
-  final double confidence; // Örneğin %80 güven
+  final String action; // AL, SAT veya BEKLE
+  final DateTime timestamp;
 
   SignalModel({
     required this.symbol,
     required this.action,
-    required this.confidence,
+    required this.timestamp,
   });
 
-  @override
-  String toString() {
-    return 'Sinyal: $symbol, İşlem: $action, Güven: ${confidence.toStringAsFixed(2)}%';
-  }
+  Map<String, dynamic> toJson() => {
+        'symbol': symbol,
+        'action': action,
+        'timestamp': timestamp.toIso8601String(),
+      };
+
+  factory SignalModel.fromJson(Map<String, dynamic> json) => SignalModel(
+        symbol: json['symbol'],
+        action: json['action'],
+        timestamp: DateTime.parse(json['timestamp']),
+      );
 }
