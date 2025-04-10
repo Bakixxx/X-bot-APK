@@ -10,9 +10,9 @@ class DonchianChannels {
   });
 
   /// Donchian Channels hesaplama
-  static DonchianChannels calculate(List<double> highs, List<double> lows, {int period = 20}) {
+  static DonchianChannels calculate(List<double> highs, List<double> lows, int period) {
     if (highs.length < period || lows.length < period) {
-      throw ArgumentError('Yetersiz veri: $period periyot için en az $period değer gerekli.');
+      throw Exception("Yeterli veri yok: $period veri gerekiyor.");
     }
 
     final recentHighs = highs.sublist(highs.length - period);
