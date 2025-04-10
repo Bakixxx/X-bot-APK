@@ -1,57 +1,73 @@
-import 'dart:math';
-import 'package:x_bot/indicators/adx.dart';
-import 'package:x_bot/indicators/cci.dart';
-import 'package:x_bot/indicators/cmf.dart';
-import 'package:x_bot/indicators/donchian_channels.dart';
-import 'package:x_bot/indicators/elliott_wave.dart';
-import 'package:x_bot/indicators/fibonacci.dart';
-import 'package:x_bot/indicators/ichimoku.dart';
-import 'package:x_bot/indicators/parabolic_sar.dart';
-import 'package:x_bot/indicators/pivot_points.dart';
-import 'package:x_bot/indicators/williams_r.dart';
+import 'package:flutter/foundation.dart';
+import '../indicators/ichimoku.dart';
+import '../indicators/ewo.dart';
+import '../indicators/parabolic_sar.dart';
+import '../indicators/adx.dart';
+import '../indicators/fibonacci.dart';
+import '../indicators/cci.dart';
+import '../indicators/pivot_points.dart';
+import '../indicators/donchian_channels.dart';
+import '../indicators/cmf.dart';
+import '../indicators/williams_r.dart';
 
 class SignalEngine {
   Future<String> generateSignal(String symbol) async {
-    // Sahte veri örneği (gerçek veriler Binance API ile çekilmeli)
-    List<double> closePrices = List.generate(100, (index) => 50000 + Random().nextInt(1000) - 500);
-    List<double> highPrices = List.generate(100, (index) => closePrices[index] + Random().nextDouble() * 100);
-    List<double> lowPrices = List.generate(100, (index) => closePrices[index] - Random().nextDouble() * 100);
-    List<double> volumes = List.generate(100, (index) => 1000 + Random().nextDouble() * 100);
+    try {
+      // Sadece örnek veriler - Gerçek API ile değiştirilecek
+      List<double> closes = [102, 105, 108, 107, 110, 112, 114, 113, 116, 118];
+      List<double> highs = [103, 106, 110, 109, 112, 113, 116, 115, 117, 119];
+      List<double> lows = [100, 104, 106, 105, 109, 110, 113, 111, 114, 116];
+      List<double> volumes = [5000, 6000, 5500, 5800, 6100, 6200, 6300, 6400, 6500, 6600];
 
-    final ichimoku = Ichimoku().calculate(highPrices, lowPrices, closePrices);
-    final sar = ParabolicSAR().calculate(highPrices, lowPrices);
-    final adx = ADX().calculate(highPrices, lowPrices, closePrices, 14);
-    final fib = FibonacciRetracement().calculate(closePrices.last, highPrices.last, lowPrices.last);
-    final cci = CCI().calculate(closePrices, highPrices, lowPrices, 20);
-    final pivot = PivotPoints().calculate(highPrices.last, lowPrices.last, closePrices.last);
-    final donchian = DonchianChannels().calculate(highPrices, lowPrices, 20);
-    final cmf = CMF().calculate(closePrices, highPrices, lowPrices, volumes, 20);
-    final williams = WilliamsR().calculate(highPrices, lowPrices, closePrices, 14);
-    final ewo = ElliottWaveOscillator().calculate(closePrices);
+      // Ichimoku
+      final ichimoku = Ichimoku.calculate(closes, highs, lows);
 
-    int buyScore = 0;
-    int sellScore = 0;
+      // EWO
+      final ewo = EWO.calculate(closes);
 
-    // Basit strateji örnekleri
-    if (sar.last < closePrices.last) buyScore++; else sellScore++;
-    if (adx > 20) buyScore++; else sellScore++;
-    if (cci > 100) buyScore++; else if (cci < -100) sellScore++;
-    if (cmf > 0) buyScore++; else sellScore++;
-    if (williams > -20) buyScore++; else if (williams < -80) sellScore++;
-    if (ewo.last > 0) buyScore++; else sellScore++;
+      // Parabolic SAR
+      final parabolicSar = ParabolicSAR.calculate(highs, lows);
 
-    if (buyScore > sellScore) {
-      return 'AL';
-    } else if (sellScore > buyScore) {
-      return 'SAT';
-    } else {
-      return 'BEKLE';
+      // ADX
+      final adx = ADX.calculate(highs, lows, closes);
+
+      // Fibonacci
+      final fibonacci = Fibonacci.calculate(closes.last, closes);
+
+      // CCI
+      final cci = CCI.calculate(closes, highs, lows, 14);
+
+      // Pivot Points
+      final pivot = PivotPoints.calculate(highs, lows, closes);
+
+      // Donchian Channels
+      final donchian = DonchianChannels.calculate(highs, lows, 20);
+
+      // CMF
+      final cmf = CMF.calculate(highs, lows, closes, volumes, 20);
+
+      // Williams %R
+      final williams = WilliamsR.calculate(closes, highs, lows, 14);
+
+      // STRATEJİLER
+      if (closes.last > ichimoku.senkouSpanA && adx.adx > 25 && cmf > 0 && williams > -20) {
+        return "AL - Güçlü trend yukarı";
+      } else if (closes.last < ichimoku.senkouSpanB && adx.adx > 25 && cmf < 0 && williams < -80) {
+        return "SAT - Güçlü trend aşağı";
+      } else if (ewo > 0 && closes.last > donchian.upperBand) {
+        return "AL - Kırılma yukarı";
+      } else if (ewo < 0 && closes.last < donchian.lowerBand) {
+        return "SAT - Kırılma aşağı";
+      } else {
+        return "NÖTR - Belirsiz sinyal";
+      }
+    } catch (e) {
+      return 'Sinyal üretme hatası: \$e';
     }
   }
 
   void processSignal() async {
-    String signal = await generateSignal('BTCUSDT');
-    print("Oluşturulan Sinyal: $signal");
-    // Burada API ile al/sat işlemi tetiklenebilir
+    String signal = await generateSignal("BTCUSDT");
+    debugPrint("Üretilen sinyal: \$signal");
   }
 }
