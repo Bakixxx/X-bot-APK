@@ -1,74 +1,63 @@
 class ADX {
-  final int period;
+  static List<double> calculate({
+    required List<double> highs,
+    required List<double> lows,
+    required List<double> closes,
+    int period = 14,
+  }) {
+    List<double> dxList = [];
+    List<double> adxList = [];
 
-  ADX({this.period = 14});
-
-  Map<String, List<double?>> calculate(List<double> highs, List<double> lows, List<double> closes) {
-    List<double?> trList = List.filled(highs.length, null);
-    List<double?> plusDM = List.filled(highs.length, null);
-    List<double?> minusDM = List.filled(highs.length, null);
+    List<double> trList = [];
+    List<double> plusDM = [];
+    List<double> minusDM = [];
 
     for (int i = 1; i < highs.length; i++) {
-      final highDiff = highs[i] - highs[i - 1];
-      final lowDiff = lows[i - 1] - lows[i];
+      double highDiff = highs[i] - highs[i - 1];
+      double lowDiff = lows[i - 1] - lows[i];
 
-      plusDM[i] = (highDiff > lowDiff && highDiff > 0) ? highDiff : 0.0;
-      minusDM[i] = (lowDiff > highDiff && lowDiff > 0) ? lowDiff : 0.0;
+      double plus = (highDiff > lowDiff && highDiff > 0) ? highDiff : 0;
+      double minus = (lowDiff > highDiff && lowDiff > 0) ? lowDiff : 0;
 
-      final tr = [
-        highs[i] - lows[i],
+      plusDM.add(plus);
+      minusDM.add(minus);
+
+      double tr = [
+        (highs[i] - lows[i]).abs(),
         (highs[i] - closes[i - 1]).abs(),
         (lows[i] - closes[i - 1]).abs()
       ].reduce((a, b) => a > b ? a : b);
 
-      trList[i] = tr;
+      trList.add(tr);
     }
 
-    List<double?> smoothedTR = _smooth(trList, period);
-    List<double?> smoothedPlusDM = _smooth(plusDM, period);
-    List<double?> smoothedMinusDM = _smooth(minusDM, period);
+    List<double> smoothedTR = _ema(trList, period);
+    List<double> smoothedPlusDM = _ema(plusDM, period);
+    List<double> smoothedMinusDM = _ema(minusDM, period);
 
-    List<double?> plusDI = List.filled(highs.length, null);
-    List<double?> minusDI = List.filled(highs.length, null);
-    List<double?> dx = List.filled(highs.length, null);
-    List<double?> adx = List.filled(highs.length, null);
+    for (int i = 0; i < smoothedTR.length; i++) {
+      double plusDI = 100 * (smoothedPlusDM[i] / smoothedTR[i]);
+      double minusDI = 100 * (smoothedMinusDM[i] / smoothedTR[i]);
 
-    for (int i = 0; i < highs.length; i++) {
-      if (smoothedTR[i] != null && smoothedTR[i]! != 0) {
-        plusDI[i] = 100 * smoothedPlusDM[i]! / smoothedTR[i]!;
-        minusDI[i] = 100 * smoothedMinusDM[i]! / smoothedTR[i]!;
-        dx[i] = 100 * ((plusDI[i]! - minusDI[i]!).abs()) / (plusDI[i]! + minusDI[i]!);
-      }
+      double dx = (100 * ((plusDI - minusDI).abs() / (plusDI + minusDI)));
+      dxList.add(dx);
     }
 
-    List<double?> smoothedDX = _smooth(dx, period);
-
-    for (int i = 0; i < highs.length; i++) {
-      adx[i] = smoothedDX[i];
-    }
-
-    return {
-      'plusDI': plusDI,
-      'minusDI': minusDI,
-      'adx': adx,
-    };
+    adxList = _ema(dxList, period);
+    return adxList;
   }
 
-  List<double?> _smooth(List<double?> input, int period) {
-    List<double?> output = List.filled(input.length, null);
-    double? sum;
+  static List<double> _ema(List<double> values, int period) {
+    List<double> result = [];
+    double k = 2 / (period + 1);
+    double ema = values.take(period).reduce((a, b) => a + b) / period;
 
-    for (int i = 0; i < input.length; i++) {
-      if (i < period) {
-        sum = (sum ?? 0) + (input[i] ?? 0);
-        if (i == period - 1) {
-          output[i] = sum! / period;
-        }
-      } else {
-        output[i] = ((output[i - 1] ?? 0) * (period - 1) + (input[i] ?? 0)) / period;
-      }
+    result.add(ema);
+    for (int i = period; i < values.length; i++) {
+      ema = values[i] * k + ema * (1 - k);
+      result.add(ema);
     }
 
-    return output;
+    return result;
   }
 }
