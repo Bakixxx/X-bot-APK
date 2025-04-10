@@ -1,82 +1,68 @@
-import 'mode_selection_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiKeysScreen extends StatefulWidget {
   const ApiKeysScreen({super.key});
 
   @override
-  _ApiKeysScreenState createState() => _ApiKeysScreenState();
+  State<ApiKeysScreen> createState() => _ApiKeysScreenState();
 }
 
 class _ApiKeysScreenState extends State<ApiKeysScreen> {
   final TextEditingController _apiKeyController = TextEditingController();
   final TextEditingController _secretKeyController = TextEditingController();
 
-  void _saveKeys() {
-    final apiKey = _apiKeyController.text.trim();
-    final secretKey = _secretKeyController.text.trim();
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedKeys();
+  }
 
-    if (apiKey.isNotEmpty && secretKey.isNotEmpty) {
-      // Burada API anahtarlarını kaydedebilir veya başka işlemler başlatabilirsin
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('API anahtarları kaydedildi.')),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Lütfen her iki alanı da doldurun.')),
-      );
-    }
+  Future<void> _loadSavedKeys() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _apiKeyController.text = prefs.getString('apiKey') ?? '';
+      _secretKeyController.text = prefs.getString('secretKey') ?? '';
+    });
+  }
+
+  Future<void> _saveKeys() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('apiKey', _apiKeyController.text);
+    await prefs.setString('secretKey', _secretKeyController.text);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('API anahtarları kaydedildi')),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('API Anahtarları'),
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.yellow,
-      ),
+      appBar: AppBar(title: const Text('API Anahtarları')),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             TextField(
               controller: _apiKeyController,
-              decoration: const InputDecoration(
-                labelText: 'API Key',
-                labelStyle: TextStyle(color: Colors.yellow),
-              ),
-              style: const TextStyle(color: Colors.yellow),
+              decoration: const InputDecoration(labelText: 'API Key'),
+              style: const TextStyle(color: Colors.white),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 10),
             TextField(
               controller: _secretKeyController,
-              decoration: const InputDecoration(
-                labelText: 'Secret Key',
-                labelStyle: TextStyle(color: Colors.yellow),
-              ),
-              style: const TextStyle(color: Colors.yellow),
+              decoration: const InputDecoration(labelText: 'Secret Key'),
+              style: const TextStyle(color: Colors.white),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 20),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-                foregroundColor: Colors.yellow,
-              ),
-              onPressed: () {
-  if (apiKey.isNotEmpty && secretKey.isNotEmpty) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ModeSelectionScreen(
-          apiKey: apiKey,
-          secretKey: secretKey,
+              onPressed: _saveKeys,
+              child: const Text('Kaydet'),
+            ),
+          ],
         ),
       ),
     );
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Lütfen API bilgilerini girin")),
-    );
   }
-},
+}
