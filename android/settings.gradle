@@ -1,2 +1,3 @@
+rootProject.name = 'xbot'
+
 include ':app'
-rootProject.name = 'x_bot'
