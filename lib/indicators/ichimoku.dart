@@ -1,43 +1,24 @@
-class IchimokuData {
-  final double tenkanSen;
-  final double kijunSen;
-  final double senkouSpanA;
-  final double senkouSpanB;
-  final double chikouSpan;
-
-  IchimokuData({
-    required this.tenkanSen,
-    required this.kijunSen,
-    required this.senkouSpanA,
-    required this.senkouSpanB,
-    required this.chikouSpan,
-  });
-}
-
 class Ichimoku {
-  static IchimokuData calculate(List<double> highs, List<double> lows, List<double> closes) {
-    int length = highs.length;
+  final List<double> high;
+  final List<double> low;
 
-    double calculateMid(int period, int offset) {
-      final subHighs = highs.sublist(length - period - offset, length - offset);
-      final subLows = lows.sublist(length - period - offset, length - offset);
-      final highestHigh = subHighs.reduce((a, b) => a > b ? a : b);
-      final lowestLow = subLows.reduce((a, b) => a < b ? a : b);
-      return (highestHigh + lowestLow) / 2;
-    }
+  Ichimoku(this.high, this.low);
 
-    final tenkanSen = calculateMid(9, 0);
-    final kijunSen = calculateMid(26, 0);
-    final senkouSpanA = (tenkanSen + kijunSen) / 2;
-    final senkouSpanB = calculateMid(52, 0);
-    final chikouSpan = closes[length - 1 - 26];
+  Map<String, double> calculate() {
+    double tenkanSen = _average(high.sublist(high.length - 9)) + _average(low.sublist(low.length - 9)) / 2;
+    double kijunSen = _average(high.sublist(high.length - 26)) + _average(low.sublist(low.length - 26)) / 2;
+    double senkouSpanA = (tenkanSen + kijunSen) / 2;
+    double senkouSpanB = (_average(high.sublist(high.length - 52)) + _average(low.sublist(low.length - 52))) / 2;
 
-    return IchimokuData(
-      tenkanSen: tenkanSen,
-      kijunSen: kijunSen,
-      senkouSpanA: senkouSpanA,
-      senkouSpanB: senkouSpanB,
-      chikouSpan: chikouSpan,
-    );
+    return {
+      'tenkanSen': tenkanSen,
+      'kijunSen': kijunSen,
+      'senkouSpanA': senkouSpanA,
+      'senkouSpanB': senkouSpanB,
+    };
+  }
+
+  double _average(List<double> values) {
+    return values.reduce((a, b) => a + b) / values.length;
   }
 }
