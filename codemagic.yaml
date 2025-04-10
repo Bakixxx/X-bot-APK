@@ -1,13 +1,17 @@
 workflows:
-  build-xbot:
-    name: Build X Bot APK
+  xbot-workflow:
+    name: X Bot APK Build
+    max_build_duration: 60
     environment:
-      flutter: "3.19.5"
-      android: latest
+      flutter: "3.19.5" # Kullandığın Flutter SDK sürümünü buraya yaz
+      android_signing:
+        - xbot_keystore # Eğer imzalı APK istiyorsan bu alanı kullanabilirsin
     scripts:
-      - name: Get Flutter packages
-        script: flutter pub get
+      - name: Flutter pub get
+        script: |
+          flutter pub get
       - name: Build APK
-        script: flutter build apk --release
+        script: |
+          flutter build apk --release
     artifacts:
       - build/app/outputs/flutter-apk/app-release.apk
