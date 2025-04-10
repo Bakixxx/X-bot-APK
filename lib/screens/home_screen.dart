@@ -28,7 +28,23 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('X Bot')),
+      appBar: AppBar(
+        title: const Text('X Bot'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.vpn_key),
+            onPressed: () {
+              Navigator.pushNamed(context, '/apikeys');
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.trending_up),
+            onPressed: () {
+              Navigator.pushNamed(context, '/trade');
+            },
+          ),
+        ],
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -36,9 +52,20 @@ class _HomeScreenState extends State<HomeScreen> {
             Text('Sinyal: $_signal', style: const TextStyle(fontSize: 24)),
             const SizedBox(height: 20),
             ElevatedButton(
-  onPressed: () {
-    final engine = SignalEngine();
-    engine.processSignal();
-  },
-  child: Text('İşlem Başlat'),
-),
+              onPressed: () {
+                final engine = SignalEngine();
+                engine.processSignal();
+              },
+              child: const Text('İşlem Başlat'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _getSignal,
+              child: const Text('Yeni Sinyal Al'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
