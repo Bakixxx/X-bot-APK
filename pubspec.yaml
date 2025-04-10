@@ -1,22 +1,21 @@
 name: x_bot
-description: Binance API ile çalışan otomatik al-sat botu
-
+description: Binance API ile otomatik alım-satım yapan X Bot uygulaması
 publish_to: 'none'
-
 version: 1.0.0+1
 
 environment:
   sdk: ">=2.17.0 <3.0.0"
 
 dependencies:
-  flutter_secure_storage: ^8.0.0
-
-  shared_preferences: ^2.2.2
   flutter:
     sdk: flutter
+
   cupertino_icons: ^1.0.2
   http: ^0.13.6
   crypto: ^3.0.3
+  shared_preferences: ^2.0.15
+  fluttertoast: ^8.2.1
+  provider: ^6.0.5
 
 dev_dependencies:
   flutter_test:
