@@ -1,4 +1,4 @@
-name: x_bot
+name: X Bot
 description: Binance API ile otomatik kripto al-sat botu
 publish_to: 'none'
 version: 1.0.0+1
